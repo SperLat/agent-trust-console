@@ -11,8 +11,8 @@ The app inspects agent prompts and candidate responses against policy-as-code gu
 - Three policy packs: enterprise baseline, finance controls, and healthcare controls.
 - Interactive dashboard implemented with scenario loading, declared intent/scope controls, response inspection, scenario evaluation status, Lobster Trap-style YAML export, OpenAI-compatible proxy metadata preview, JSONL audit export, and report export.
 - Integration guide added in `INTEGRATION.md`.
+- Public repository pushed to `https://github.com/SperLat/agent-trust-console`.
 - No hackathon submission has been made.
-- No public repository has been created or pushed yet.
 
 ## Run Locally
 
@@ -58,7 +58,6 @@ Project angle: companies adopting AI agents need a practical operator console th
 ## Next Steps
 
 1. Register/enroll on the TechEx hackathon page.
-2. Create a public GitHub repo named `agent-trust-console`.
-3. Push this project after approval.
-4. Deploy a hosted demo.
-5. Record a short video showing benign, prompt injection, secret exfiltration, PHI, and policy export scenarios.
+2. Deploy a hosted demo.
+3. Record a short video showing benign, prompt injection, secret exfiltration, PHI, and policy export scenarios.
+4. Submit the public repository, hosted demo, and video through the hackathon portal.

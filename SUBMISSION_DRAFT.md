@@ -47,7 +47,6 @@ Agent Security & AI Governance
 
 ## Planned Before Submission
 
-- Public GitHub repo.
 - Hosted demo.
 - Short video walkthrough.
 - Optional direct Lobster Trap runtime integration if feasible inside the build window.

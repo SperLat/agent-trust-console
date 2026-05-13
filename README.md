@@ -13,6 +13,7 @@ The app inspects agent prompts and candidate responses against policy-as-code gu
 - Integration guide added in `INTEGRATION.md`.
 - Hosted-demo deployment config added with `render.yaml` and `Dockerfile`.
 - Submission copy and reviewer commands collected in `SUBMISSION_ASSETS.md`.
+- TechEx submission checklist, video script, and pitch deck outline added for final portal prep.
 - Public repository pushed to `https://github.com/SperLat/agent-trust-console`.
 - No hackathon submission has been made.
 

@@ -44,6 +44,12 @@ async function inspectScenario() {
   if (!result.matchedRules.some((rule) => rule.id === "LT-IN-001")) {
     throw new Error("Expected prompt injection rule LT-IN-001.");
   }
+  if (!result.lobsterTrapRequest?._lobstertrap?.declared_intent) {
+    throw new Error("Expected Lobster Trap request metadata.");
+  }
+  if (result.lobsterTrapVerdict?.verdict !== "DENY") {
+    throw new Error("Expected Lobster Trap DENY verdict shape.");
+  }
   return {
     requestId: result.requestId,
     action: result.action,
@@ -68,7 +74,7 @@ try {
   const checks = [
     await expectText("/", "Agent Trust Console"),
     await expectText("/api/status", "Agent Trust Console"),
-    await expectText("/api/policy.yaml?pack=enterprise", "lobster_trap_policy")
+    await expectText("/api/policy.yaml?pack=enterprise", "policy_name")
   ];
   const inspection = await inspectScenario();
   console.log(JSON.stringify({

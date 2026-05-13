@@ -93,6 +93,17 @@ export const SCENARIOS = [
   }
 ];
 
+function yamlList(items, indent = "      ") {
+  if (!items.length) return [`${indent}[]`];
+  return items.map((item) => `${indent}- ${JSON.stringify(item)}`);
+}
+
+function policyPathGlob(filePath) {
+  if (filePath.startsWith("/")) return filePath;
+  if (filePath.startsWith(".")) return `**/${filePath}`;
+  return `**/${filePath}`;
+}
+
 const DETECTORS = [
   {
     id: "prompt_injection",
@@ -316,6 +327,45 @@ export function inspectConversation(payload = {}) {
       forbiddenPaths,
       forbiddenDomains
     },
+    lobsterTrapRequest: {
+      model: "enterprise-agent-model",
+      messages: [{ role: "user", content: input }],
+      _lobstertrap: {
+        declared_intent: declaredIntent,
+        declared_paths: allowedPaths,
+        agent_id: payload.agent || "Unassigned Agent",
+        declared_domains: allowedDomains,
+        policy_pack: policy.id
+      }
+    },
+    lobsterTrapVerdict: {
+      request_id: requestId,
+      verdict: action.toUpperCase(),
+      ingress: {
+        declared: {
+          declared_intent: declaredIntent,
+          declared_paths: allowedPaths,
+          agent_id: payload.agent || "Unassigned Agent"
+        },
+        detected: {
+          intent_category: detectedIntent,
+          risk_score: riskScore / 100,
+          target_paths: paths,
+          target_domains: domains
+        },
+        mismatches: matchedRules
+          .filter((item) => item.id === "LT-INTENT-010" || item.id === "LT-FILE-007" || item.id === "LT-NET-006")
+          .map((item) => item.id),
+        action: action.toUpperCase()
+      },
+      egress: {
+        detected: {
+          risk_score: responseMatches.reduce((sum, match) => sum + match.weight, 0) / 100,
+          contains_credentials: responseMatches.some((match) => match.id === "credential_output" || match.id === "credential_request")
+        },
+        action: action.toUpperCase()
+      }
+    },
     matchedRules,
     recommendations: buildRecommendations(action, matchedRules)
   };
@@ -324,36 +374,79 @@ export function inspectConversation(payload = {}) {
 export function buildPolicyYaml(policyId = "enterprise") {
   const policy = POLICY_PACKS[policyId] || POLICY_PACKS.enterprise;
   return [
-    "lobster_trap_policy:",
-    `  id: ${policy.id}`,
-    `  name: ${policy.label}`,
-    "  mode: enforce",
-    "  risk_thresholds:",
-    `    human_review: ${policy.riskThresholds.review}`,
-    `    quarantine: ${policy.riskThresholds.quarantine}`,
-    `    deny: ${policy.riskThresholds.deny}`,
-    "  ingress_rules:",
-    "    - id: LT-IN-001",
-    "      action: deny",
-    "      match: prompt_injection_or_instruction_override",
-    "    - id: LT-INTENT-010",
-    "      action: human_review",
-    "      match: declared_intent_mismatch",
-    "  data_rules:",
-    "    - id: LT-DATA-004",
-    "      action: quarantine",
-    "      match: credentials_or_secret_material",
-    "    - id: LT-DATA-009",
-    "      action: human_review",
-    "      match: pii_or_regulated_data",
-    "  egress_rules:",
-    "    denied_domains:",
-    ...policy.deniedDomains.map((domain) => `      - ${domain}`),
-    "  file_rules:",
-    "    denied_paths:",
-    ...policy.deniedPaths.map((filePath) => `      - ${filePath}`),
-    "  audit:",
-    "    capture: [request_id, agent, declared_intent, detected_intent, action, matched_rules, timestamp]",
-    "    retain_days: 90"
+    `version: "1.0"`,
+    `policy_name: "${policy.id}-agent-governance"`,
+    `default_action: ALLOW`,
+    "",
+    "ingress_rules:",
+    "  - name: block_prompt_injection",
+    "    description: Detected prompt injection or instruction override",
+    "    priority: 100",
+    "    action: DENY",
+    "    deny_message: \"[LOBSTER TRAP] Blocked: prompt injection detected.\"",
+    "    conditions:",
+    "      - field: contains_injection_patterns",
+    "        match_type: boolean",
+    "        value: true",
+    "  - name: quarantine_credential_access",
+    "    description: Prompt requests secrets or credential material",
+    "    priority: 95",
+    "    action: QUARANTINE",
+    "    conditions:",
+    "      - field: contains_credentials",
+    "        match_type: boolean",
+    "        value: true",
+    "  - name: review_high_risk_intent",
+    "    description: Review requests with elevated aggregate risk",
+    "    priority: 70",
+    "    action: HUMAN_REVIEW",
+    "    conditions:",
+    "      - field: risk_score",
+    "        match_type: threshold",
+    `        value: ${(policy.riskThresholds.review / 100).toFixed(2)}`,
+    "",
+    "egress_rules:",
+    "  - name: quarantine_secret_output",
+    "    description: Model output appears to contain credentials",
+    "    priority: 100",
+    "    action: QUARANTINE",
+    "    conditions:",
+    "      - field: contains_credentials",
+    "        match_type: boolean",
+    "        value: true",
+    "  - name: review_pii_output",
+    "    description: Model output contains PII or regulated data",
+    "    priority: 90",
+    "    action: HUMAN_REVIEW",
+    "    conditions:",
+    "      - field: contains_pii",
+    "        match_type: boolean",
+    "        value: true",
+    "",
+    "rate_limits:",
+    "  requests_per_minute: 120",
+    "  requests_per_hour: 2000",
+    "  burst_threshold: 30",
+    "",
+    "network:",
+    "  egress_policy: allowlist",
+    "  allowed_domains:",
+    ...yamlList(["api.openai.com", "api.anthropic.com", "localhost"], "    "),
+    "  denied_domains:",
+    ...yamlList(policy.deniedDomains, "    "),
+    "",
+    "filesystem:",
+    "  denied_paths:",
+    ...yamlList(policy.deniedPaths.map(policyPathGlob), "    "),
+    "  allowed_read_paths:",
+    ...yamlList(["/tmp/agent_workspace/**", "/home/*/documents/**"], "    "),
+    "  allowed_write_paths:",
+    ...yamlList(["/tmp/agent_workspace/agent_output/**"], "    "),
+    "",
+    "audit:",
+    "  format: jsonl",
+    "  capture_declared_metadata: true",
+    "  capture_detected_metadata: true",
+    "  retain_days: 90"
   ].join("\n");
 }

@@ -9,7 +9,8 @@ The app inspects agent prompts and candidate responses against policy-as-code gu
 - Local policy/risk engine implemented.
 - Prompt injection, secret handling, PII, egress, file scope, and dangerous command detectors implemented.
 - Three policy packs: enterprise baseline, finance controls, and healthcare controls.
-- Interactive dashboard implemented with scenario loading, declared intent/scope controls, response inspection, YAML export, and report export.
+- Interactive dashboard implemented with scenario loading, declared intent/scope controls, response inspection, Lobster Trap-style YAML export, OpenAI-compatible proxy metadata preview, and report export.
+- Integration guide added in `INTEGRATION.md`.
 - No hackathon submission has been made.
 - No public repository has been created or pushed yet.
 
@@ -52,4 +53,4 @@ Project angle: companies adopting AI agents need a practical operator console th
 2. Create a public GitHub repo named `agent-trust-console`.
 3. Push this project after approval.
 4. Deploy a hosted demo.
-5. Record a short video showing benign, prompt injection, secret exfiltration, and PHI scenarios.
+5. Record a short video showing benign, prompt injection, secret exfiltration, PHI, and policy export scenarios.

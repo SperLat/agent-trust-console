@@ -24,7 +24,7 @@ Expected result: low-risk allow decision with an audit event.
 
 ## 1:45 - 2:10
 
-Show generated policy YAML and explain that it is designed to map into Lobster Trap-style enforcement.
+Show generated policy YAML and the proxy contract preview. Explain that agents can declare `_lobstertrap` metadata while Lobster Trap returns ingress and egress verdicts.
 
 ## 2:10 - 2:30
 

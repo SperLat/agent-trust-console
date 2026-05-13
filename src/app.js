@@ -154,7 +154,19 @@ function resultMarkdown() {
     result.matchedRules.map((rule) => `- ${rule.id} (${rule.action}): ${rule.reason}`).join("\n") || "- None",
     "",
     "## Recommendations",
-    result.recommendations.map((item) => `- ${item}`).join("\n")
+    result.recommendations.map((item) => `- ${item}`).join("\n"),
+    "",
+    "## Lobster Trap Request Metadata",
+    "",
+    "```json",
+    JSON.stringify(result.lobsterTrapRequest?._lobstertrap || {}, null, 2),
+    "```",
+    "",
+    "## Lobster Trap Verdict Shape",
+    "",
+    "```json",
+    JSON.stringify(result.lobsterTrapVerdict || {}, null, 2),
+    "```"
   ].join("\n");
 }
 
@@ -294,6 +306,7 @@ function renderPolicyPanel() {
         </div>
         <pre>${escapeHtml(state.policyYaml)}</pre>
       </section>
+      ${renderProxyCard()}
       <section class="audit-card">
         <div class="panel-heading compact">
           <div>
@@ -315,6 +328,25 @@ function renderPolicyPanel() {
         </div>
       </section>
     </aside>
+  `;
+}
+
+function renderProxyCard() {
+  if (!state.result) return "";
+  const proxyPreview = {
+    request: state.result.lobsterTrapRequest,
+    verdict: state.result.lobsterTrapVerdict
+  };
+  return `
+    <section class="proxy-card">
+      <div class="panel-heading compact">
+        <div>
+          <strong>Proxy Contract</strong>
+          <span>OpenAI-compatible request metadata and returned verdict</span>
+        </div>
+      </div>
+      <pre>${escapeHtml(JSON.stringify(proxyPreview, null, 2))}</pre>
+    </section>
   `;
 }
 

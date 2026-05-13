@@ -234,6 +234,7 @@ dd {
 .input-panel,
 .decision-panel,
 .policy-card,
+.proxy-card,
 .audit-card,
 .recommendation-strip {
   min-width: 0;

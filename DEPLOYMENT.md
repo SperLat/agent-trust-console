@@ -43,4 +43,4 @@ The verification script starts a temporary server, checks the app shell, validat
 - This demo runs a local policy engine and does not transmit prompts to external services.
 - Audit events are kept in memory only.
 - No credentials are required for the current demo.
-- Future production deployment should persist audit events, add authentication, and integrate with a real policy enforcement proxy.
+- Future production deployment should persist audit events, add authentication, and optionally call a configured Lobster Trap binary or proxy endpoint.

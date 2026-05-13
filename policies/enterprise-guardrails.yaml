@@ -1,0 +1,38 @@
+lobster_trap_policy:
+  id: enterprise
+  name: Enterprise baseline
+  mode: enforce
+  risk_thresholds:
+    human_review: 35
+    quarantine: 65
+    deny: 82
+  ingress_rules:
+    - id: LT-IN-001
+      action: deny
+      match: prompt_injection_or_instruction_override
+    - id: LT-INTENT-010
+      action: human_review
+      match: declared_intent_mismatch
+  data_rules:
+    - id: LT-DATA-004
+      action: quarantine
+      match: credentials_or_secret_material
+    - id: LT-DATA-009
+      action: human_review
+      match: pii_or_regulated_data
+  egress_rules:
+    denied_domains:
+      - pastebin.com
+      - webhook.site
+      - transfer.sh
+      - anonfiles.com
+  file_rules:
+    denied_paths:
+      - .env
+      - .ssh
+      - /etc/passwd
+      - id_rsa
+      - secrets.json
+  audit:
+    capture: [request_id, agent, declared_intent, detected_intent, action, matched_rules, timestamp]
+    retain_days: 90

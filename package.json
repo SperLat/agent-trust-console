@@ -1,0 +1,11 @@
+{
+  "name": "agent-trust-console",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node --use-system-ca server.mjs",
+    "check": "node --check server.mjs && node --check scripts/verify.mjs && node --check src/analysis-engine.mjs && node --check src/app.js",
+    "verify": "npm run check && node --use-system-ca scripts/verify.mjs"
+  }
+}

@@ -1,0 +1,9 @@
+.git
+.env
+.env.*
+node_modules
+server.out.log
+server.err.log
+*.log
+qa
+qa-output

@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: agent-trust-console
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/status
+    autoDeployTrigger: commit
+    envVars:
+      - key: NODE_VERSION
+        value: 22.11.0
+      - key: HOST
+        value: 0.0.0.0

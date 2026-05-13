@@ -12,6 +12,7 @@ import {
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 4321);
+const HOST = process.env.HOST || "0.0.0.0";
 const MAX_BODY_BYTES = 1024 * 1024;
 const auditLog = [];
 
@@ -162,6 +163,6 @@ const server = http.createServer(async (request, response) => {
   await serveStatic(request, response);
 });
 
-server.listen(PORT, () => {
-  console.log(`Agent Trust Console running at http://localhost:${PORT}`);
+server.listen(PORT, HOST, () => {
+  console.log(`Agent Trust Console running at http://${HOST}:${PORT}`);
 });

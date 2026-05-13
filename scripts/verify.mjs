@@ -70,7 +70,7 @@ async function evaluateScenarioSuite() {
   };
 }
 
-const server = spawn(process.execPath, ["--use-system-ca", "server.mjs"], {
+const server = spawn(process.execPath, ["server.mjs"], {
   cwd: new URL("..", import.meta.url),
   env: { ...process.env, PORT: String(PORT) },
   stdio: ["ignore", "pipe", "pipe"]

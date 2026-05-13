@@ -11,6 +11,8 @@ The app inspects agent prompts and candidate responses against policy-as-code gu
 - Three policy packs: enterprise baseline, finance controls, and healthcare controls.
 - Interactive dashboard implemented with scenario loading, declared intent/scope controls, response inspection, scenario evaluation status, Lobster Trap-style YAML export, OpenAI-compatible proxy metadata preview, JSONL audit export, and report export.
 - Integration guide added in `INTEGRATION.md`.
+- Hosted-demo deployment config added with `render.yaml` and `Dockerfile`.
+- Submission copy and reviewer commands collected in `SUBMISSION_ASSETS.md`.
 - Public repository pushed to `https://github.com/SperLat/agent-trust-console`.
 - No hackathon submission has been made.
 

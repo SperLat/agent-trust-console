@@ -58,6 +58,18 @@ async function inspectScenario() {
   };
 }
 
+async function evaluateScenarioSuite() {
+  const response = await fetch(`${BASE_URL}/api/evaluations`);
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.error || "Evaluation request failed");
+  if (result.failed !== 0) throw new Error(`Expected all evaluations to pass; ${result.failed} failed.`);
+  return {
+    total: result.total,
+    passed: result.passed,
+    failed: result.failed
+  };
+}
+
 const server = spawn(process.execPath, ["--use-system-ca", "server.mjs"], {
   cwd: new URL("..", import.meta.url),
   env: { ...process.env, PORT: String(PORT) },
@@ -77,12 +89,14 @@ try {
     await expectText("/api/policy.yaml?pack=enterprise", "policy_name")
   ];
   const inspection = await inspectScenario();
+  const evaluation = await evaluateScenarioSuite();
   console.log(JSON.stringify({
     ok: true,
     app: status.app,
     baseUrl: BASE_URL,
     checks,
-    inspection
+    inspection,
+    evaluation
   }, null, 2));
 } finally {
   server.kill();

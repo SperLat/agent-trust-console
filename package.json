@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "start": "node --use-system-ca server.mjs",
-    "check": "node --check server.mjs && node --check scripts/verify.mjs && node --check src/analysis-engine.mjs && node --check src/app.js",
-    "verify": "npm run check && node --use-system-ca scripts/verify.mjs"
+    "check": "node --check server.mjs && node --check scripts/verify.mjs && node --check scripts/evaluate.mjs && node --check src/analysis-engine.mjs && node --check src/app.js",
+    "eval": "node scripts/evaluate.mjs",
+    "verify": "npm run check && npm run eval && node --use-system-ca scripts/verify.mjs"
   }
 }

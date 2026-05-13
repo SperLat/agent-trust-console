@@ -9,7 +9,7 @@ The app inspects agent prompts and candidate responses against policy-as-code gu
 - Local policy/risk engine implemented.
 - Prompt injection, secret handling, PII, egress, file scope, and dangerous command detectors implemented.
 - Three policy packs: enterprise baseline, finance controls, and healthcare controls.
-- Interactive dashboard implemented with scenario loading, declared intent/scope controls, response inspection, Lobster Trap-style YAML export, OpenAI-compatible proxy metadata preview, and report export.
+- Interactive dashboard implemented with scenario loading, declared intent/scope controls, response inspection, scenario evaluation status, Lobster Trap-style YAML export, OpenAI-compatible proxy metadata preview, JSONL audit export, and report export.
 - Integration guide added in `INTEGRATION.md`.
 - No hackathon submission has been made.
 - No public repository has been created or pushed yet.
@@ -32,6 +32,12 @@ Run verification:
 npm run verify
 ```
 
+Run the deterministic scenario evaluator only:
+
+```powershell
+npm run eval
+```
+
 ## API
 
 - `GET /api/status`: app and track status.
@@ -40,6 +46,8 @@ npm run verify
 - `GET /api/policy.yaml?pack=enterprise`: policy-as-code export.
 - `POST /api/inspect`: inspect a prompt/response payload.
 - `GET /api/audit`: local audit events.
+- `GET /api/audit.jsonl`: audit export for compliance review.
+- `GET /api/evaluations`: expected vs actual scenario control matrix.
 
 ## Hackathon Fit
 

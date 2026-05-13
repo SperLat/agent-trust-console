@@ -20,7 +20,7 @@ Agent Trust Console gives security, compliance, and platform teams a focused rev
 - Inspect inbound prompts and candidate responses.
 - Detect prompt injection, credential exposure, PII, forbidden paths, undeclared domains, and dangerous shell behavior.
 - Return allow, human review, quarantine, or deny decisions.
-- Export Lobster Trap-style policy YAML, preview OpenAI-compatible `_lobstertrap` request metadata, and produce an audit-ready report.
+- Show expected vs actual scenario evaluations, export Lobster Trap-style policy YAML, preview OpenAI-compatible `_lobstertrap` request metadata, and produce audit-ready JSONL/report artifacts.
 
 ## Track
 
@@ -34,14 +34,16 @@ Agent Security & AI Governance
 4. Show quarantine and secret redaction recommendation.
 5. Switch to the benign support ticket triage scenario.
 6. Show the allowed decision and audit event.
-7. Export policy YAML and an inspection report.
+7. Show the scenario evaluation matrix.
+8. Export policy YAML, JSONL audit evidence, and an inspection report.
 
 ## Current Integrations
 
 - Local policy engine modeled around Lobster Trap-style ingress, data, egress, file, and audit rules.
 - Policy-as-code YAML export.
 - OpenAI-compatible proxy metadata and verdict preview.
-- Local audit trail.
+- Local audit trail with JSONL export.
+- Deterministic scenario evaluator for reviewer verification.
 
 ## Planned Before Submission
 

@@ -4,6 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   buildPolicyYaml,
+  evaluateScenarios,
   inspectConversation,
   POLICY_PACKS,
   SCENARIOS
@@ -66,6 +67,10 @@ function addAudit(result) {
   if (auditLog.length > 200) auditLog.pop();
 }
 
+function auditJsonl() {
+  return auditLog.map((event) => JSON.stringify(event)).join("\n");
+}
+
 async function serveStatic(request, response) {
   const url = new URL(request.url, `http://${request.headers.host}`);
   const pathname = url.pathname === "/" ? "/index.html" : url.pathname;
@@ -120,6 +125,16 @@ const server = http.createServer(async (request, response) => {
 
   if (url.pathname === "/api/audit") {
     sendJson(response, 200, { events: auditLog });
+    return;
+  }
+
+  if (url.pathname === "/api/audit.jsonl") {
+    sendText(response, 200, auditJsonl(), "application/x-ndjson; charset=utf-8");
+    return;
+  }
+
+  if (url.pathname === "/api/evaluations") {
+    sendJson(response, 200, evaluateScenarios());
     return;
   }
 

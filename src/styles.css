@@ -235,6 +235,7 @@ dd {
 .decision-panel,
 .policy-card,
 .proxy-card,
+.evaluation-card,
 .audit-card,
 .recommendation-strip {
   min-width: 0;
@@ -514,11 +515,13 @@ pre {
   overflow-wrap: anywhere;
 }
 
-.audit-list {
+.audit-list,
+.evaluation-list {
   display: grid;
 }
 
-.audit-row {
+.audit-row,
+.evaluation-row {
   display: grid;
   grid-template-columns: 12px 1fr;
   gap: 10px;
@@ -526,22 +529,34 @@ pre {
   border-bottom: 1px solid var(--line);
 }
 
-.audit-row:last-child {
+.audit-row:last-child,
+.evaluation-row:last-child {
   border-bottom: 0;
 }
 
 .audit-row strong,
-.audit-row small {
+.audit-row small,
+.evaluation-row strong,
+.evaluation-row small {
   display: block;
 }
 
-.audit-row strong {
+.audit-row strong,
+.evaluation-row strong {
   font-size: 13px;
 }
 
-.audit-row small {
+.audit-row small,
+.evaluation-row small {
   margin-top: 3px;
   color: var(--muted);
+}
+
+.button-pair {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .dot {

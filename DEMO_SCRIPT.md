@@ -24,8 +24,8 @@ Expected result: low-risk allow decision with an audit event.
 
 ## 1:45 - 2:10
 
-Show generated policy YAML and the proxy contract preview. Explain that agents can declare `_lobstertrap` metadata while Lobster Trap returns ingress and egress verdicts.
+Show the scenario evaluation matrix, generated policy YAML, and the proxy contract preview. Explain that agents can declare `_lobstertrap` metadata while Lobster Trap returns ingress and egress verdicts.
 
 ## 2:10 - 2:30
 
-Export the report and show the audit trail. Close with the value: policy decisions, operator evidence, and compliance records in one agent governance loop.
+Export the JSONL audit evidence and inspection report. Close with the value: policy decisions, operator evidence, and compliance records in one agent governance loop.

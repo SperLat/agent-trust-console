@@ -14,6 +14,7 @@ const state = {
   scenarios: [],
   policies: {},
   policyYaml: "",
+  evaluation: null,
   activeScenarioId: "",
   form: {
     agent: "",
@@ -84,7 +85,8 @@ async function loadInitialData() {
     fetch("/api/status").then((response) => response.json()),
     fetch("/api/scenarios").then((response) => response.json()),
     fetch("/api/policies").then((response) => response.json()),
-    fetch("/api/audit").then((response) => response.json())
+    fetch("/api/audit").then((response) => response.json()),
+    refreshEvaluation()
   ]);
   state.status = status;
   state.scenarios = scenarioPayload.scenarios;
@@ -92,6 +94,11 @@ async function loadInitialData() {
   state.policyYaml = policyPayload.yaml;
   state.audit = auditPayload.events;
   setFormFromScenario(state.scenarios[1] || state.scenarios[0]);
+}
+
+async function refreshEvaluation() {
+  state.evaluation = await fetch("/api/evaluations").then((response) => response.json());
+  return state.evaluation;
 }
 
 async function refreshPolicyYaml() {
@@ -168,6 +175,10 @@ function resultMarkdown() {
     JSON.stringify(result.lobsterTrapVerdict || {}, null, 2),
     "```"
   ].join("\n");
+}
+
+function auditJsonl() {
+  return state.audit.map((event) => JSON.stringify(event)).join("\n");
 }
 
 function renderScenarioList() {
@@ -296,6 +307,7 @@ function renderDecision() {
 function renderPolicyPanel() {
   return `
     <aside class="right-panel">
+      ${renderEvaluationCard()}
       <section class="policy-card">
         <div class="panel-heading compact">
           <div>
@@ -313,21 +325,50 @@ function renderPolicyPanel() {
             <strong>Audit Trail</strong>
             <span>${state.audit.length} local event(s)</span>
           </div>
-          <button class="outline-action" data-action="download-report" ${state.result ? "" : "disabled"}>${icons.export} Report</button>
+          <div class="button-pair">
+            <button class="outline-action" data-action="download-audit" ${state.audit.length ? "" : "disabled"}>${icons.export} JSONL</button>
+            <button class="outline-action" data-action="download-report" ${state.result ? "" : "disabled"}>${icons.export} Report</button>
+          </div>
         </div>
         <div class="audit-list">
           ${state.audit.slice(0, 8).map((event) => `
             <div class="audit-row">
               <span class="dot ${event.action}"></span>
               <div>
-                <strong>${escapeHtml(actionLabel(event.action))} · ${escapeHtml(event.agent)}</strong>
-                <small>${escapeHtml(event.requestId)} · risk ${event.riskScore}</small>
+                <strong>${escapeHtml(actionLabel(event.action))} - ${escapeHtml(event.agent)}</strong>
+                <small>${escapeHtml(event.requestId)} - risk ${event.riskScore}</small>
               </div>
             </div>
           `).join("") || `<div class="empty-audit">No inspections yet.</div>`}
         </div>
       </section>
     </aside>
+  `;
+}
+
+function renderEvaluationCard() {
+  const evaluation = state.evaluation;
+  if (!evaluation) return "";
+  return `
+    <section class="evaluation-card">
+      <div class="panel-heading compact">
+        <div>
+          <strong>Scenario Evaluation</strong>
+          <span>${evaluation.passed}/${evaluation.total} controls passing</span>
+        </div>
+      </div>
+      <div class="evaluation-list">
+        ${evaluation.cases.map((item) => `
+          <div class="evaluation-row">
+            <span class="dot ${item.pass ? "allow" : "deny"}"></span>
+            <div>
+              <strong>${escapeHtml(item.title)}</strong>
+              <small>${escapeHtml(actionLabel(item.actualAction))} - expected ${escapeHtml(actionLabel(item.expectedAction))} - risk ${item.riskScore}</small>
+            </div>
+          </div>
+        `).join("")}
+      </div>
+    </section>
   `;
 }
 
@@ -411,6 +452,7 @@ document.addEventListener("click", async (event) => {
   }
   if (action === "inspect") inspect();
   if (action === "download-policy") download(`agent-trust-${state.form.policyPack}-policy.yaml`, state.policyYaml, "text/yaml");
+  if (action === "download-audit") download(`agent-trust-audit-${new Date().toISOString().slice(0, 10)}.jsonl`, auditJsonl(), "application/x-ndjson");
   if (action === "download-report" && state.result) download(`agent-trust-report-${state.result.requestId}.md`, resultMarkdown(), "text/markdown");
 });
 
